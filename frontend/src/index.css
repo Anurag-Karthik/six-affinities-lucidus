@@ -1,6 +1,43 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Albert Sans';
+  src: url('./assets/fonts/AlbertSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Albert Sans';
+  src: url('./assets/fonts/AlbertSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Albert Sans';
+  src: url('./assets/fonts/AlbertSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Albert Sans';
+  src: url('./assets/fonts/AlbertSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
 @theme {
-    --color-primary: #130934;
-    --color-primary-light: #2e1a66;
+    --color-purple: #130934;
+    --color-purple-light: #2e1a66;
+
+    --color-olive-green: #118A66;
+
+    --font-albert-sans: 'Albert Sans', sans-serif;
+}
+
+body {
+    font-family: 'Albert Sans', sans-serif;
 }
