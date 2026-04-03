@@ -24,6 +24,17 @@ export class AssessmentsController {
         return this.assessmentsService.fetchAssessmentQuestions(userId, body.assessmentId);
     }
 
+    @Post('get-assessment')
+    async getAssessment(@Request() req, @Body() body: FetchAssessmentQuestionsDTO) {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            throw new UnauthorizedException('User not authenticated');
+        }
+
+        return this.assessmentsService.getAssessment(body.assessmentId);
+    }
+
     @Post('record-response')
     async recordResponse(@Request() req, @Body() body: RecordResponseDTO) {
         const userId = req.user?.id;
