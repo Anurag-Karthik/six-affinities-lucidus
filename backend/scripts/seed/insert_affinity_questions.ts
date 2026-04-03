@@ -123,16 +123,14 @@ async function main() {
 
     console.log(`Seeding ${questions.length} questions...`);
 
-    for (const question of questions) {
-      await prisma.affinityQuestions.create({
-        data: {
+    await prisma.affinityQuestions.createMany({
+        data: questions.map(question => ({
             code: question.code,
             subCode: question.sub_code,
             statement: question.statement,
-            imageUrl: question.image,
-        }
-      });
-    }
+            imageUrl: question.image
+        }))
+    });
 
     console.log('✅ Seeding Completed Successfully');
   } catch (error) {
