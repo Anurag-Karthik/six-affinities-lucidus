@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from "@prisma/adapter-pg";
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
 
 const adapter = new PrismaPg({
   connectionString: "postgres://postgres:postgrespassword@localhost:5432/postgres?sslmode=disable",
@@ -13,8 +16,11 @@ async function main() {
 
     const user = {
         name: "Anurag",
-        email: "anuragpolamarasetty@gmail.com"
+        email: "anuragpolamarasetty@gmail.com",
+        password: "Admin123"
     }
+
+    user.password = await bcrypt.hash(user.password, SALT_ROUNDS);
 
     console.log(`Adding User ${user.email}`);
 
