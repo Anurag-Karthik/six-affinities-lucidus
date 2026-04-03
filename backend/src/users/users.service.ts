@@ -121,4 +121,36 @@ export class UsersService {
             }
         }
     }
+
+    async insertUser(name: string, email: string, passwordHash: string) {
+        try {
+            console.log("Inserting User: ", email);
+
+            const newUser = await this.db.users.create({
+                data: {
+                    name: name,
+                    email: email,
+                    password: passwordHash,
+                    status: "ACTIVE"
+                }
+            });
+
+            console.log(`Inserted [${newUser.id}]-[${newUser.email}] Details`);
+
+            return {
+                success: true,
+                data: {
+                    user: newUser
+                }
+            };
+        } catch (error) {
+            console.error("Error inserting user: ", error);
+            return {
+                success: false,
+                data: {
+                    message: "An error occurred while inserting user"
+                }
+            }
+        }
+    }
 }
