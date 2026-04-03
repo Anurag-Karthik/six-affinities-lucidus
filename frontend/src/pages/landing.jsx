@@ -16,7 +16,8 @@ export default function Landing() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginDialog, setLoginDialog] = useState(false);
   const [isRegistration, setIsRegistration] = useState(false);
-
+  const [newOrExistingAssessmentPrompt, setNewOrExistingAssessmentPrompt] = useState(false);
+  const [existingAssessmentToContinue, setExistingAssessmentToContinue] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +37,15 @@ export default function Landing() {
     localStorage.clear();
     setIsAuthenticated(false);
     setLoginDialog(false);
+    setNewOrExistingAssessmentPrompt(false);
+    setExistingAssessmentToContinue(null);
     setLoginError("");
     navigate("/");
+  };
+
+  const closeAssessmentChoiceDialog = () => {
+    setNewOrExistingAssessmentPrompt(false);
+    setExistingAssessmentToContinue(null);
   };
 
   const createAssessment = async (userToken) => {
@@ -96,18 +104,42 @@ export default function Landing() {
 
     return data?.data?.assessments?.[0] || null;
   };
-
-  const promptUserIfNewOrExistingAssessment = async (userToken, existingAssessment = null) => {
-    if (existingAssessment) {
-
-    }
-
+  
+  const navigateToAssessment = async (userToken, existingAssessment = null) => {
     const assessmentId = existingAssessment?.id || (await createAssessment(userToken));
     if (!assessmentId) {
       return;
     }
 
     navigate(`/assessment/${assessmentId}`);
+  };
+
+  const handleContinueExistingQuest = async () => {
+    if (!existingAssessmentToContinue?.id) {
+      closeAssessmentChoiceDialog();
+      return;
+    }
+
+    closeAssessmentChoiceDialog();
+    navigate(`/assessment/${existingAssessmentToContinue.id}`);
+  };
+
+  const handleStartNewQuest = async () => {
+    try {
+      const userToken = localStorage.getItem("six-affinities-user-token");
+
+      if (!userToken) {
+        handleSessionExpired();
+        return;
+      }
+
+      closeAssessmentChoiceDialog();
+      await navigateToAssessment(userToken);
+    } catch (error) {
+      console.error("Start New Quest Error:", error);
+      setLoginError(error.message || "Failed to start a new quest.");
+      setLoginDialog(true);
+    }
   };
 
   const startQuestBtnHandler = async () => {
@@ -127,7 +159,13 @@ export default function Landing() {
 
       const existingAssessment = await getExistingAssessment(userToken);
 
-      await promptUserIfNewOrExistingAssessment(userToken, existingAssessment);
+      if (existingAssessment?.id) {
+        setExistingAssessmentToContinue(existingAssessment);
+        setNewOrExistingAssessmentPrompt(true);
+        return;
+      }
+
+      await navigateToAssessment(userToken);
     } catch (error) {
       console.error("Start Quest Error:", error);
       setLoginError(error.message || "Failed to start assessment.");
@@ -258,7 +296,14 @@ export default function Landing() {
       setEmail("");
       setPassword("");
       setIsRegistration(false);
-      await promptUserIfNewOrExistingAssessment(accessToken, activeAssessment);
+
+      if (activeAssessment?.id) {
+        setExistingAssessmentToContinue(activeAssessment);
+        setNewOrExistingAssessmentPrompt(true);
+        return;
+      }
+
+      await navigateToAssessment(accessToken);
     } catch (error) {
       console.error(`${mode === "register" ? "Registration" : "Login"} Error:`, error);
       setLoginError(error.message || failureMessage);
@@ -376,6 +421,35 @@ export default function Landing() {
                 </div>
             ) 
         }
+      </Dialog>
+
+      <Dialog
+        displayDialog={newOrExistingAssessmentPrompt}
+        isClosable={false}
+        onClose={closeAssessmentChoiceDialog}
+      >
+        <div className="text-purple text-lg font-semibold mb-2">
+          Your Quest Awaits
+        </div>
+        <div className="text-purple mb-5">
+          You’ve got ongoing quest. Continue your journey or begin a new one—it only takes a moment.
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Button
+            onClick={handleStartNewQuest}
+            className="rounded-xl py-4"
+            type="olive-green-light"
+          >
+            Start New
+          </Button>
+          <Button
+            onClick={handleContinueExistingQuest}
+            className="rounded-xl py-4"
+            type="olive-green"
+          >
+            Continue
+          </Button>
+        </div>
       </Dialog>
     </>
   );

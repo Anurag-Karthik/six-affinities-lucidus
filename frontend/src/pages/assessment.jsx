@@ -33,7 +33,7 @@ export default function Assessment() {
   const [progress, setProgress] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [startExitAnimation, setStartExitAnimation] = useState({
-    status: false,
+    status: 'dragging',
     response: null,
   });
   const [exitAnimationEnded, setExitAnimationEnded] = useState(false);
@@ -60,9 +60,43 @@ export default function Assessment() {
         setQuestionSet([]);
         setCurrentQuestionIndex(0);
         setProgress(0);
-        setStartExitAnimation({ status: false, response: null });
+        setStartExitAnimation({ status: 'dragging', response: null });
         setExitAnimationEnded(false);
         setIsTutorialActive(true);
+
+        const assessmentResponse = await fetch(
+          `${environment.backendUrl}/assessments/get-assessment`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({ assessmentId }),
+          },
+        );
+
+        if (!assessmentResponse.ok) {
+          if (assessmentResponse.status === 401) {
+            setAssessmentError("Your session has expired. Please login again.");
+            localStorage.clear();
+            navigate("/");
+            return;
+          }
+
+          throw new Error("Failed to load assessment data. Please try again.");
+        }
+
+        const assessmentData = await assessmentResponse.json();
+
+        if (!assessmentData?.success) {
+          throw new Error(
+            assessmentData?.data?.message || "Failed to load assessment data.",
+          );
+        }
+
+        const savedResponses = assessmentData?.data?.assessment?.responses || [];
+        const resumeQuestionIndex = savedResponses.length;
 
         const response = await fetch(
           `${environment.backendUrl}/assessments/fetch-assessment-questions`,
@@ -101,6 +135,13 @@ export default function Assessment() {
         }
 
         setQuestionSet(returnedQuestions);
+        const nextQuestionIndex = Math.min(
+          resumeQuestionIndex,
+          Math.max(returnedQuestions.length - 1, 0),
+        );
+        setCurrentQuestionIndex(nextQuestionIndex);
+        setProgress(Math.round((nextQuestionIndex / returnedQuestions.length) * 100));
+        setIsTutorialActive(resumeQuestionIndex === 0);
         setAssessmentError("");
       } catch (error) {
         console.error("Fetch Assessment Questions Error:", error);
@@ -114,9 +155,23 @@ export default function Assessment() {
   }, [assessmentId, navigate]);
 
   useEffect(() => {
+    const handleBrowserBack = () => {
+      setLeaveAssessmentConfirmationDialog(true);
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", handleBrowserBack);
+
+    return () => {
+      window.removeEventListener("popstate", handleBrowserBack);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!exitAnimationEnded) return;
 
-    setStartExitAnimation({ status: false, response: null });
+    setStartExitAnimation({ status: 'dragging', response: null });
     setExitAnimationEnded(false);
 
     const isLastQuestion = currentQuestionIndex === questionSet.length - 1;
@@ -232,7 +287,7 @@ export default function Assessment() {
       setAssessmentError(
         error.message || "Failed to save response. Please try again.",
       );
-      setStartExitAnimation({ status: false, response: null });
+      setStartExitAnimation({ status: 'dragging', response: null });
     }
   };
 
@@ -259,7 +314,7 @@ export default function Assessment() {
 
               if (["no", "maybe", "yes"].includes(id)) {
                 setStartExitAnimation({
-                  status: true,
+                  status: 'above-badge',
                   response: id.toUpperCase(),
                 });
                 handleResponseSubmission(id);
@@ -282,6 +337,7 @@ export default function Assessment() {
                   currentQuestionIndex={currentQuestionIndex}
                   onUndo={handleUndo}
                   startExitAnimation={startExitAnimation}
+                  exitAnimationPauseEnded={() => setStartExitAnimation({ status: 'exit', response: startExitAnimation.response })}
                   exitAnimationEnded={() => setExitAnimationEnded(true)}
                 />
               )}
@@ -327,6 +383,7 @@ function AssessmentBoard({
   currentQuestionIndex,
   onUndo,
   startExitAnimation,
+  exitAnimationPauseEnded,
   exitAnimationEnded,
 }) {
   const {
@@ -336,7 +393,6 @@ function AssessmentBoard({
     transform,
   } = useDraggable({
     id: "affinity-card",
-    disabled: startExitAnimation.status,
   });
   const { setNodeRef: noResponseDroppableRef } = useDroppable({
     id: "no",
@@ -350,17 +406,30 @@ function AssessmentBoard({
 
   // To inform the Parent that Animation has ended and it's safe to move to next question or result page
   useEffect(() => {
-    if (startExitAnimation.status) {
-      const timer = setTimeout(() => {
+    if (startExitAnimation.status === 'above-badge') {
+      const moveCardToBadgeTimer = setTimeout(() => {
+        exitAnimationPauseEnded();
+      }, 10);
+
+      return () => clearTimeout(moveCardToBadgeTimer);
+    } else if (startExitAnimation.status === 'exit') {
+      const endExitAnimationTimer = setTimeout(() => {
         exitAnimationEnded();
       }, 500);
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(endExitAnimationTimer);
     }
-  }, [startExitAnimation.status]);
+  }, [startExitAnimation]);
 
   const getAnimation = () => {
-    if (startExitAnimation.status) {
+    if (startExitAnimation.status === 'dragging') {
+        return {
+            transform: transform
+            ? `translate3d(${transform.x}px, ${transform.y}px, 0) scale(${transform ? (transform.y > 0 ? Math.max(0.25, 1 - Math.abs(transform.y) / (window.innerHeight * 0.25)) : 1) : 1})`
+            : undefined,
+            transition: "transform 200ms ease",
+        };
+    } if (startExitAnimation.status === 'exit') {
       // Once release the card, trigger the exit animation based on the response
       switch (startExitAnimation.response) {
         case "YES":
@@ -379,14 +448,24 @@ function AssessmentBoard({
             transition: "transform 1s ease-out",
           };
       }
-    } else {
-      // While dragging, apply a dynamic scale based on the vertical drag distance
-      return {
-        transform: transform
-          ? `translate3d(${transform.x}px, ${transform.y}px, 0) scale(${transform ? (transform.y > 0 ? Math.max(0.25, 1 - Math.abs(transform.y) / (window.innerHeight * 0.25)) : 1) : 1})`
-          : undefined,
-        transition: "transform 200ms ease",
-      };
+    } else if(startExitAnimation.status === 'above-badge') {
+        switch (startExitAnimation.response) {
+            case "YES":
+            return {
+                transform: `translate3d(37%, 230px, 0) scale(0.25)`,
+                transition: 'none',
+            };
+            case "NO":
+            return {
+                transform: `translate3d(-37%, 230px, 0) scale(0.25)`,
+                transition: 'none',
+            };
+            case "MAYBE":
+            return {
+                transform: `translate3d(0, 230px, 0) scale(0.25)`,
+                transition: 'none',
+            };
+        }
     }
   };
 
@@ -433,17 +512,17 @@ function AssessmentBoard({
       </div>
 
       <div className="absolute inset-x-0 bottom-0  px-6 grid grid-cols-3 gap-8">
-        <div ref={noResponseDroppableRef}>
+        <div ref={noResponseDroppableRef} className="h-80 flex items-end">
           <div className="w-full h-40 px-1 bg-[#2C167A80] rounded-t-4xl">
             <Badge text="No" color="orange"></Badge>
           </div>
         </div>
-        <div ref={maybeResponseDroppableRef}>
+        <div ref={maybeResponseDroppableRef} className="h-80 flex items-end">
           <div className="w-full h-40 px-1 bg-[#2C167A80] rounded-t-4xl">
             <Badge text="Maybe" color="yellow"></Badge>
           </div>
         </div>
-        <div ref={yesResponseDroppableRef}>
+        <div ref={yesResponseDroppableRef} className="h-80 flex items-end">
           <div className="w-full h-40 px-1 bg-[#2C167A80] rounded-t-4xl">
             <Badge text="Yes" color="green"></Badge>
           </div>
