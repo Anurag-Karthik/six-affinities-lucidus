@@ -1,0 +1,20 @@
+services:  
+  postgres:
+    image: postgres:16
+    container_name: six-affinities-database
+    restart: always
+    networks:
+      - six-affinities
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - docker.env
+
+volumes:
+  db_data:
+
+networks:
+  six-affinities:
+    external: true
