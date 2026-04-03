@@ -69,6 +69,12 @@ CREATE TABLE "AssessmentResults" (
 CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "AffinityQuestions_code_key" ON "AffinityQuestions"("code");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AffinityQuestions_subCode_key" ON "AffinityQuestions"("subCode");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "AssessmentResults_assessmentId_key" ON "AssessmentResults"("assessmentId");
 
 -- AddForeignKey
