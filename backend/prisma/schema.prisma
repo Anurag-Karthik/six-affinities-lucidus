@@ -6,6 +6,57 @@ datasource db {
   provider = "postgresql"
 }
 
+model Users {
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  status      UserStatus    @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  assessments Assessments[]
+}
+
+model AffinityQuestions {
+  id                  String                @id @default(uuid())
+  code                String
+  subCode             String
+  statement           String
+  imageUrl            String?
+  isActive            Boolean               @default(true)
+  createdAt           DateTime              @default(now())
+  assessmentResponses AssessmentResponses[]
+}
+
+model Assessments {
+  id          String                @id @default(uuid())
+  userId      String
+  status      AssessmentStatus      @default(IN_PROGRESS)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  completedAt DateTime?
+  responses   AssessmentResponses[]
+  result      AssessmentResults?
+  user        Users                 @relation(fields: [userId], references: [id])
+}
+
+model AssessmentResponses {
+  id           String            @id @default(uuid())
+  assessmentId String
+  questionId   String
+  response     ResponseType
+  createdAt    DateTime          @default(now())
+  assessment   Assessments       @relation(fields: [assessmentId], references: [id])
+  question     AffinityQuestions @relation(fields: [questionId], references: [id])
+}
+
+model AssessmentResults {
+  id           String      @id @default(uuid())
+  assessmentId String      @unique
+  result       Json
+  createdAt    DateTime    @default(now())
+  assessment   Assessments @relation(fields: [assessmentId], references: [id])
+}
+
 enum UserStatus {
   ACTIVE
   SUSPENDED
@@ -21,60 +72,4 @@ enum ResponseType {
   YES
   NO
   MAYBE
-}
-
-model Users {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  status     UserStatus @default(ACTIVE)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  assessments Assessments[]
-}
-
-model AffinityQuestions {
-  id        String   @id @default(uuid())
-  code      String
-  subCode   String
-  statement String
-  imageUrl  String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  assessmentResponses AssessmentResponses[]
-}
-
-model Assessments {
-  id           String   @id @default(uuid())
-  userId       String
-  status       AssessmentStatus @default(IN_PROGRESS)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  completedAt  DateTime?
-
-  user        Users                  @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  responses   AssessmentResponses[]
-  result      AssessmentResults?
-}
-
-model AssessmentResponses {
-  id            String   @id @default(uuid())
-  assessmentId  String
-  questionId    String
-  response      ResponseType
-  createdAt     DateTime @default(now())
-
-  assessment Assessments      @relation(fields: [assessmentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  question   AffinityQuestions @relation(fields: [questionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-}
-
-model AssessmentResults {
-  id            String   @id @default(uuid())
-  assessmentId  String   @unique
-  result        Json
-  createdAt     DateTime @default(now())
-
-  assessment Assessments @relation(fields: [assessmentId], references: [id])
 }
