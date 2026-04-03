@@ -5,6 +5,7 @@
   src: url('./assets/fonts/AlbertSans-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
+  line-height: 1.5;
 }
 
 @font-face {
@@ -12,6 +13,7 @@
   src: url('./assets/fonts/AlbertSans-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
+  line-height: 1.5;
 }
 
 @font-face {
@@ -19,6 +21,7 @@
   src: url('./assets/fonts/AlbertSans-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
+  line-height: 1.5;
 }
 
 @font-face {
@@ -26,16 +29,29 @@
   src: url('./assets/fonts/AlbertSans-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
+  line-height: 1.5;
 }
 
 
 @theme {
-    --color-purple: #130934;
-    --color-purple-light: #2e1a66;
+  --color-purple: #130934;
+  --color-purple-light: #371C9A;
+  --color-olive-green: #118A66;
+  --color-violet: #A187FF;
+  --color-light-violet: #C2B1FF;
+  --color-teal: #87EFD0;
+  --color-light-green: #AAEF87;
+  --color-indigo: #3618A3;
+  --color-light-orange: #FF9A64;
+  --color-dark-orange: #A94915;
+  --color-light-yellow: #FFC815;
+  --color-dark-yellow: #906E00;
+  --color-light-green: #AAEF87;
+  --color-dark-green: #37880F;
 
-    --color-olive-green: #118A66;
+  --blur-20: blur(20px);
 
-    --font-albert-sans: 'Albert Sans', sans-serif;
+  --font-albert-sans: 'Albert Sans', sans-serif;
 }
 
 body {
