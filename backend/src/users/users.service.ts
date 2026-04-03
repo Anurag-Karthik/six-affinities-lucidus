@@ -49,6 +49,43 @@ export class UsersService {
         }
     }
 
+    async getUserByEmail(email: string) {
+        try {
+
+            console.log("Fetching User Details: ", email);
+            const user = await this.db.users.findUnique({
+                where: { email: email }
+            });
+    
+            if(!user) {
+                return {
+                    success: false,
+                    data: {
+                        message: "User not Found"
+                    }
+                }
+            }
+    
+            console.log(`Fetched [${user.id}]-[${user.email}] Details`);
+    
+            return {
+                success: true,
+                data: {
+                    user: user
+                }
+            };
+        } catch (error) {
+            console.error("Error fetching user details: ", error);
+            return {
+                success: false,
+                data: {
+                    message: "An error occurred while fetching user details"
+                }
+            }
+        }
+
+    }
+
     async getUserById(userId: string) {
         try {
 
@@ -68,19 +105,10 @@ export class UsersService {
     
             console.log(`Fetched [${user.id}]-[${user.email}] Details`);
     
-            if(user.status === "SUSPENDED") {
-                return {
-                    success: false,
-                    data: {
-                        message: "User is Suspended"
-                    }
-                }
-            }
-    
             return {
                 success: true,
                 data: {
-                    ...user
+                    user: user
                 }
             };
         } catch (error) {
@@ -92,6 +120,5 @@ export class UsersService {
                 }
             }
         }
-
     }
 }
