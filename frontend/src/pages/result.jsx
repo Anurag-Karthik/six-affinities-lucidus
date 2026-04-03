@@ -20,7 +20,7 @@ export default function Result() {
                 const userToken = localStorage.getItem("six-affinities-user-token");
 
                 if (!userToken) {
-                    throw new Error("Please login to view assessment results.");
+                    navigate('/');
                 }
 
                 if (!assessmentId) {
@@ -103,7 +103,7 @@ export default function Result() {
                     <div className="text-violet font-semibold text-[18px] mb-1">
                         The Six Affinities<sup className="text-xs">TM</sup>
                     </div>
-                    <div className="mb-4">
+                    <div className="mb-4 text-white">
                         Know what drives you. When your work aligns with your interests, motivation lasts.
                     </div>
 
