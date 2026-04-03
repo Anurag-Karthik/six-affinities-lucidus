@@ -203,12 +203,12 @@ function Tutorial({ onClose, onStartAssessment }) {
             case "dragging":
                 return {
                     transform: `translate3d(-37%, 200px, 0) scale(0.25)`,
-                    transition: "transform 2s ease-out"
+                    transition: "transform 1s ease-out"
                 }
             case "exit":
                 return {
                     transform: `translate3d(-37%, 100vh, 0) scale(0.25)`,
-                    transition: "transform 3s ease-in-out"
+                    transition: "transform 2s ease-in-out"
                 }
             case "reset":
                 return {
@@ -219,43 +219,44 @@ function Tutorial({ onClose, onStartAssessment }) {
     }
 
     useEffect(() => {
-        let initialTimer;
-        let dragTimer;
-        let exitTimer;
-        let resetTimer;
-        let pauseTimer;
+    let resetTimer;
+    let initialTimer;
+    let dragTimer;
+    let pauseTimer;
+    let exitTimer;
 
-        const runAnimation = () => {
-            setPhase("reset");
+    const runAnimation = () => {
+        setPhase("reset");
 
-            resetTimer = setTimeout(() => {
-                setPhase("initial");
+        resetTimer = setTimeout(() => {
+            setPhase("initial");
 
-                initialTimer = setTimeout(() => {
-                    setPhase("dragging");
+            initialTimer = setTimeout(() => {
+                setPhase("dragging");
 
+                dragTimer = setTimeout(() => {
                     pauseTimer = setTimeout(() => {
                         setPhase("exit");
 
                         exitTimer = setTimeout(() => {
                             runAnimation();
                         }, 2000);
+                    }, 500);
+                }, 1000);
+            }, 200);
+        }, 50);
+    };
 
-                    }, 3000);
-                }, 500);
+    runAnimation();
 
-            }, 50);
-        };
-
-        runAnimation();
-
-        return () => {
-            clearTimeout(dragTimer);
-            clearTimeout(exitTimer);
-            clearTimeout(resetTimer);
-            clearTimeout(pauseTimer);
-        };
-    }, []);
+    return () => {
+        clearTimeout(resetTimer);
+        clearTimeout(initialTimer);
+        clearTimeout(dragTimer);
+        clearTimeout(pauseTimer);
+        clearTimeout(exitTimer);
+    };
+}, []);
 
     return (
         <div className='px-6 text-center'>
