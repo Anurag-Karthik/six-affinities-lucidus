@@ -19,8 +19,8 @@ model Users {
 
 model AffinityQuestions {
   id                  String                @id @default(uuid())
-  code                String                @unique
-  subCode             String                @unique
+  code                String                
+  subCode             String                
   statement           String
   imageUrl            String?
   isActive            Boolean               @default(true)
