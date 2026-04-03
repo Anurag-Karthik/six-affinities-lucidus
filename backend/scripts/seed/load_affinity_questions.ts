@@ -1,6 +1,12 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: "postgres://postgres:postgrespassword@localhost:5432/postgres?sslmode=disable",
+});
+
+const prisma = new PrismaClient({ adapter });
+
 
 async function main() {
   try {
@@ -124,7 +130,6 @@ async function main() {
             subCode: question.sub_code,
             statement: question.statement,
             imageUrl: question.image,
-            order: questions.indexOf(question) + 1,
         }
       });
     }
