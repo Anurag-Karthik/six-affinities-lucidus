@@ -1,7 +1,27 @@
-import { IsNotEmpty, IsUUID } from "class-validator";
+import { IsEnum, IsNotEmpty, IsUUID } from "class-validator";
 
-export class CreateAssessmentDTO {
+export class RecordResponseDTO {
     @IsNotEmpty()
     @IsUUID()
-    userId!: string;
+    assignmentId!: string;
+
+    @IsNotEmpty()
+    @IsUUID()
+    questionId!: string;
+
+    @IsNotEmpty()
+    @IsEnum(['YES', 'NO', 'MAYBE'])
+    response!: 'YES' | 'NO' | 'MAYBE';
+}
+
+export class FetchResultDTO {
+    @IsNotEmpty()
+    @IsUUID()
+    assessmentId!: string;
+}
+
+export class FetchAssessmentQuestionsDTO {
+    @IsNotEmpty()
+    @IsUUID()
+    assessmentId!: string;
 }
