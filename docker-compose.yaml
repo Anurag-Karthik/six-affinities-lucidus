@@ -1,10 +1,10 @@
-services:  
+services:
   postgres:
     image: postgres:16
     container_name: six-affinities-database
     restart: always
     networks:
-      - six-affinities
+      - six-affinities-network
     ports:
       - 5432:5432
     volumes:
@@ -12,9 +12,40 @@ services:
     env_file:
       - docker.env
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: six-affinities-backend
+    restart: always
+    networks:
+      - six-affinities-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 3000:3000
+    env_file:
+      - docker.env
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_BACKEND_URL: http://localhost:3000
+    container_name: six-affinities-frontend
+    restart: always
+    networks:
+      - six-affinities-network
+    depends_on:
+      - backend
+    ports:
+      - 5173:80
+
 volumes:
   db_data:
 
 networks:
-  six-affinities:
+  six-affinities-network:
     external: true
