@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/header";
 import CloseButton from "../components/close-btn";
 import Badge from "../components/badge";
-import HexagonChart from "../components/hexagon-chart";
+import RadialChart from "../components/radial-chart";
 import environment from "../environment";
 
 export default function Result() {
@@ -38,7 +38,6 @@ export default function Result() {
 
                 if (!response.ok) {
                     if(response.status === 401) {
-                        setAssessmentError('Your session has expired. Please login again.');
                         localStorage.clear();
                         navigate('/');
                     }
@@ -85,10 +84,11 @@ export default function Result() {
             return accumulator;
         }, {});
 
-        return affinityOrder.map(({ label, icon }) => ({
-            label,
-            value: resultLookup[label.toLowerCase()] || 0,
-            image_url: icon,
+        return affinityOrder.map(({ label }) => ({
+            code: label,
+            probability: resultLookup[label.toLowerCase()] || 0,
+            fullMark: 100,
+
         }));
     }, [results]);
 
@@ -99,11 +99,11 @@ export default function Result() {
             <div className="m-6">
                 <CloseButton onClose={() => navigate("/")} />
 
-                <div className='mt-4 p-5 pb-0 linear bg-linear-to-t from-white/1x to-white/10 rounded-t-3xl backdrop-blur-2xl'>
+                <div className='p-5 pb-0 linear bg-linear-to-t from-white/1x to-white/10 rounded-t-3xl backdrop-blur-2xl'>
                     <div className="text-violet font-semibold text-[18px] mb-1">
                         The Six Affinities<sup className="text-xs">TM</sup>
                     </div>
-                    <div className="mb-4 text-white">
+                    <div className="text-light-violet mb-4 text-sm">
                         Know what drives you. When your work aligns with your interests, motivation lasts.
                     </div>
 
@@ -120,11 +120,10 @@ export default function Result() {
                     {!isLoading && !resultError && (
                         <>
                             <div className="mb-6 flex justify-center">
-                                <HexagonChart data={chartData} />
+                                <RadialChart chartData={chartData} />
                             </div>
 
                             <div>
-                                <div className="text-violet font-semibold text-[14px] mb-4">Detailed View</div>
                                 {sortedResults.map(([code, probability]) => (
                                     <div key={code} className="flex justify-between items-center mb-2">
                                         <Badge text={code} hasImage={true} imgSrc={`/src/assets/images/affinity-icons/${code.toLowerCase()}.svg`} color="blur" />

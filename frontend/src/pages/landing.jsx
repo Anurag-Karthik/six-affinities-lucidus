@@ -7,9 +7,16 @@ import Dialog from "../components/dialog";
 import Input from "../components/input";
 
 import arrow from "../assets/images/icons/arrow_forward.svg";
+import builder from "../assets/images/affinity-icons/builder.svg";
+import creator from "../assets/images/affinity-icons/creator.svg";
+import helper from "../assets/images/affinity-icons/helper.svg";
+import leader from "../assets/images/affinity-icons/leader.svg";
+import organizer from "../assets/images/affinity-icons/organizer.svg";
+import thinker from "../assets/images/affinity-icons/thinker.svg";
 import environment from "../environment";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const AFFINITY_ICONS = [organizer, leader, helper, builder, creator, thinker];
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -25,12 +32,21 @@ export default function Landing() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
 
   useEffect(() => {
     const userToken = localStorage.getItem("six-affinities-user-token");
     if (userToken) {
       setIsAuthenticated(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const carouselTimer = setInterval(() => {
+      setActiveCarouselIndex((prev) => (prev + 1) % AFFINITY_ICONS.length);
+    }, 2200);
+
+    return () => clearInterval(carouselTimer);
   }, []);
 
   const handleSessionExpired = () => {
@@ -321,7 +337,36 @@ export default function Landing() {
             Six Affinities?<sup className="text-xs">TM</sup>
           </div>
         </div>
-        <div className="mt-109">
+        <div className="relative mt-32 h-36 w-full overflow-hidden">
+          <div className="relative mx-auto h-36 w-36">
+            {AFFINITY_ICONS.map((icon, index) => {
+              const totalSlides = AFFINITY_ICONS.length;
+              const previousSlideIndex =
+                (activeCarouselIndex - 1 + totalSlides) % totalSlides;
+
+              const isActiveSlide = index === activeCarouselIndex;
+              const isPreviousSlide = index === previousSlideIndex;
+
+              return (
+                <img
+                  key={icon}
+                  src={icon}
+                  alt="Affinity Icon"
+                  className="absolute top-0 left-0 w-36 transition-all duration-500 ease-in-out"
+                  style={{
+                    transform: isActiveSlide
+                      ? "translateX(0%)"
+                      : isPreviousSlide
+                        ? "translateX(-130%)"
+                        : "translateX(130%)",
+                    opacity: isActiveSlide ? 1 : 0,
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+        <div className="mt-40">
           <Button
             onClick={startQuestBtnHandler}
             className="rounded-4xl font-bold text-sm"
