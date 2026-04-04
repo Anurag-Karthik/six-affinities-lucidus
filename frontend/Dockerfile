@@ -7,15 +7,14 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_BACKEND_URL=http://localhost:3000
-ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
-
 RUN npm run build
 
 FROM nginx:1.27-alpine AS runner
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY docker-entrypoint.d/99-env.sh /docker-entrypoint.d/99-env.sh
+RUN chmod +x /docker-entrypoint.d/99-env.sh
 
 EXPOSE 80
 

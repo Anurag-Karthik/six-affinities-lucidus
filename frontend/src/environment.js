@@ -1,5 +1,7 @@
+const runtimeEnvironment = globalThis.__APP_ENV__ || {};
+
 const environment = {
-    backendUrl: import.meta.env.VITE_BACKEND_URL || "http://localhost:3000",
+    backendUrl: runtimeEnvironment.VITE_BACKEND_URL || import.meta.env.VITE_BACKEND_URL || "http://localhost:3000",
 };
 
 export default environment;
