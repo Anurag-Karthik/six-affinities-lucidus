@@ -14,7 +14,14 @@ import organizer from "../assets/images/affinity-icons/organizer.svg";
 import thinker from "../assets/images/affinity-icons/thinker.svg";
 import environment from "../environment";
 
-const AFFINITY_ICONS = [organizer, leader, helper, builder, creator, thinker];
+const AFFINITY_ICONS = {
+    organizer: organizer,
+    leader: leader,
+    helper: helper,
+    builder: builder,
+    creator: creator,
+    thinker: thinker
+};
 
 export default function Result() {
     const { assessmentId } = useParams();
@@ -135,7 +142,6 @@ export default function Result() {
                             <div>
                                 {sortedResults.map(([code, probability]) => (
                                     <div key={code} className="flex justify-between items-center mb-2">
-                                        {code.toLowerCase()}
                                         <Badge text={code} hasImage={true} imgSrc={AFFINITY_ICONS[code.toLowerCase()]} color="blur" />
                                         <Badge text={`${probability}%`} color="blur" />
                                     </div>
