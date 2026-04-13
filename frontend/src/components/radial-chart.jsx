@@ -50,7 +50,7 @@ export default function RadialChart({ chartData }) {
                     position: 'absolute',
                     top: '50%',
                     left: '50%',
-                    width: '68%',
+                    width: '185px',
                     height: '78%',
                     transform: 'translate(-50%, -50%)',
                     borderRadius: '50%',
