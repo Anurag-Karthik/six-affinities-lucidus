@@ -217,6 +217,7 @@ export default function Assessment() {
   };
 
   const handleUndo = () => {
+    console.log("Undoing last response...");
     const newIndex = currentQuestionIndex - 1;
     setCurrentQuestionIndex(newIndex);
     updateProgress(newIndex);
@@ -496,7 +497,7 @@ function AssessmentBoard({
         </div>
       </div>
 
-      <div className="min-h-12">
+      <div className="relative z-20 min-h-12">
         {currentQuestionIndex > 0 && (
           <Button
             onClick={onUndo}
