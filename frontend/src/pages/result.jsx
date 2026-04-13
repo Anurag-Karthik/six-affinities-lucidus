@@ -5,7 +5,23 @@ import Header from "../components/header";
 import CloseButton from "../components/close-btn";
 import Badge from "../components/badge";
 import RadialChart from "../components/radial-chart";
+
+import builder from "../assets/images/affinity-icons/builder.svg";
+import creator from "../assets/images/affinity-icons/creator.svg";
+import helper from "../assets/images/affinity-icons/helper.svg";
+import leader from "../assets/images/affinity-icons/leader.svg";
+import organizer from "../assets/images/affinity-icons/organizer.svg";
+import thinker from "../assets/images/affinity-icons/thinker.svg";
 import environment from "../environment";
+
+const AFFINITY_ICONS = {
+    organizer: organizer,
+    leader: leader,
+    helper: helper,
+    builder: builder,
+    creator: creator,
+    thinker: thinker
+};
 
 export default function Result() {
     const { assessmentId } = useParams();
@@ -126,7 +142,7 @@ export default function Result() {
                             <div>
                                 {sortedResults.map(([code, probability]) => (
                                     <div key={code} className="flex justify-between items-center mb-2">
-                                        <Badge text={code} hasImage={true} imgSrc={`/src/assets/images/affinity-icons/${code.toLowerCase()}.svg`} color="blur" />
+                                        <Badge text={code} hasImage={true} imgSrc={AFFINITY_ICONS[code.toLowerCase()]} color="blur" />
                                         <Badge text={`${probability}%`} color="blur" />
                                     </div>
                                 ))}

@@ -435,7 +435,7 @@ export default function Landing() {
           ) : (
             <Button
               onClick={() => authenticateUser("login")}
-              className="w-[60%] rounded-xl py-4"
+              className="w-[60%] md:w-[25%] rounded-xl py-4"
               type="olive-green"
             >
               Login
