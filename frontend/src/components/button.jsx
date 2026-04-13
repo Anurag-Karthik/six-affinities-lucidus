@@ -7,6 +7,7 @@ export default function Button({ children, onClick, className, type }) {
 
     return (
         <button
+            type="button"
             onClick={onClick}
             className={`${btnTypes[type]} ${className}`}
         >
