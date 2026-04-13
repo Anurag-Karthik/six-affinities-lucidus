@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const adapter = new PrismaPg({
-  connectionString: "",
+  connectionString: "postgres://postgres:postgrespassword@localhost:5432/postgres?sslmode=disable",
 });
 
 const prisma = new PrismaClient({ adapter });

@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 const SALT_ROUNDS = 10;
 
 const adapter = new PrismaPg({
-  connectionString: "",
+  connectionString: "postgres://postgres:postgrespassword@localhost:5432/postgres?sslmode=disable",
 });
 
 const prisma = new PrismaClient({ adapter });

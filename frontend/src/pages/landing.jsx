@@ -33,6 +33,8 @@ export default function Landing() {
   const [passwordError, setPasswordError] = useState("");
   const [loginError, setLoginError] = useState("");
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
+  const [isStartQuestLoading, setIsStartQuestLoading] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   useEffect(() => {
     const userToken = localStorage.getItem("six-affinities-user-token");
@@ -56,7 +58,8 @@ export default function Landing() {
     setNewOrExistingAssessmentPrompt(false);
     setExistingAssessmentToContinue(null);
     setLoginError("");
-    navigate("/");
+    setIsStartQuestLoading(false);
+    setLoginDialog(true);
   };
 
   const closeAssessmentChoiceDialog = () => {
@@ -126,8 +129,8 @@ export default function Landing() {
     if (!assessmentId) {
       return;
     }
-
     navigate(`/assessment/${assessmentId}`);
+    setIsStartQuestLoading(false);
   };
 
   const handleContinueExistingQuest = async () => {
@@ -136,6 +139,7 @@ export default function Landing() {
       return;
     }
 
+    setIsStartQuestLoading(false);
     closeAssessmentChoiceDialog();
     navigate(`/assessment/${existingAssessmentToContinue.id}`);
   };
@@ -155,12 +159,15 @@ export default function Landing() {
       console.error("Start New Quest Error:", error);
       setLoginError(error.message || "Failed to start a new quest.");
       setLoginDialog(true);
+      setIsStartQuestLoading(false);
     }
   };
 
   const startQuestBtnHandler = async () => {
+    setIsStartQuestLoading(true);
     if (!isAuthenticated) {
       setLoginDialog(true);
+      setIsStartQuestLoading(false);
       return;
     }
 
@@ -170,6 +177,7 @@ export default function Landing() {
       if (!userToken) {
         setIsAuthenticated(false);
         setLoginDialog(true);
+        setIsStartQuestLoading(false);
         return;
       }
 
@@ -185,7 +193,8 @@ export default function Landing() {
     } catch (error) {
       console.error("Start Quest Error:", error);
       setLoginError(error.message || "Failed to start assessment.");
-      setLoginDialog(true);
+      setIsStartQuestLoading(false);
+      navigate("/");
     }
   };
 
@@ -218,6 +227,7 @@ export default function Landing() {
   };
 
   const authenticateUser = async (mode) => {
+    setIsLoginLoading(true);
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
@@ -250,6 +260,7 @@ export default function Landing() {
     }
 
     if (hasError) {
+      setIsLoginLoading(false);
       return;
     }
 
@@ -312,6 +323,7 @@ export default function Landing() {
       setEmail("");
       setPassword("");
       setIsRegistration(false);
+      setIsLoginLoading(false);
 
       if (activeAssessment?.id) {
         setExistingAssessmentToContinue(activeAssessment);
@@ -323,6 +335,7 @@ export default function Landing() {
     } catch (error) {
       console.error(`${mode === "register" ? "Registration" : "Login"} Error:`, error);
       setLoginError(error.message || failureMessage);
+      setIsLoginLoading(false);
     }
   };
 
@@ -367,16 +380,32 @@ export default function Landing() {
           </div>
         </div>
         <div className="mt-40">
-          <Button
-            onClick={startQuestBtnHandler}
-            className="rounded-4xl font-bold text-sm"
-            type="olive-green"
-          >
-            <div className="flex items-center ml-2">
-              Start Quest
-              <img src={arrow} className="ml-2" alt="Arrow" />
-            </div>
-          </Button>
+          {
+            isStartQuestLoading ? (
+              <Button
+                className="rounded-4xl font-bold text-sm"
+                type="olive-green"
+              >
+                <div className="flex items-center ml-2">
+                    Loading
+                    <div className="ml-4">
+                      <div className="border-2 border-white/50 border-t-white rounded-full size-6 animate-spin "></div>
+                    </div>
+                </div>
+              </Button>
+            ) : (
+              <Button
+                onClick={startQuestBtnHandler}
+                className="rounded-4xl font-bold text-sm"
+                type="olive-green"
+              >
+                <div className="flex items-center ml-2">
+                    Start Quest
+                    <img src={arrow} className="ml-2" alt="Arrow" />
+                </div>
+              </Button>
+            )
+          }
         </div>
       </div>
 
@@ -424,23 +453,39 @@ export default function Landing() {
           required={true}
         />
         <div className="text-right">
-          {isRegistration ? (
-            <Button
-              onClick={() => authenticateUser("register")}
-              className="w-[60%] rounded-xl py-4"
-              type="olive-green"
-            >
-              Register
-            </Button>
-          ) : (
-            <Button
-              onClick={() => authenticateUser("login")}
-              className="w-[60%] md:w-[25%] rounded-xl py-4"
-              type="olive-green"
-            >
-              Login
-            </Button>
-          )}
+          {
+            isLoginLoading ? (
+              <Button
+                className="w-[60%] md:w-[25%] rounded-xl py-4"
+                type="olive-green"
+              >
+                <div className="flex items-center ml-2">
+                    Loading
+                    <div className="ml-4">
+                      <div className="border-2 border-white/50 border-t-white rounded-full size-6 animate-spin "></div>
+                    </div>
+                </div>
+              </Button>
+            ) : (
+              isRegistration ? (
+                <Button
+                  onClick={() => authenticateUser("register")}
+                  className="w-[60%] rounded-xl py-4"
+                  type="olive-green"
+                >
+                  Register
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => authenticateUser("login")}
+                  className="w-[60%] md:w-[25%] rounded-xl py-4"
+                  type="olive-green"
+                >
+                  Login
+                </Button>
+              )
+            )
+          }
         </div>
         <div>
           {loginError && (
