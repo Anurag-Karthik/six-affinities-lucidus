@@ -344,7 +344,7 @@ export default function Landing() {
       <Header />
 
       <div className="text-center">
-        <div className="mt-25 text-xl text-white font-bold">
+        <div className="mt-20 text-xl text-white font-bold">
           <div>Ready To Discover Your</div>
           <div>
             Six Affinities?<sup className="text-xs">TM</sup>
@@ -379,7 +379,7 @@ export default function Landing() {
             })}
           </div>
         </div>
-        <div className="mt-40">
+        <div className="absolute bottom-26 left-1/2 transform -translate-x-1/2">
           {
             isStartQuestLoading ? (
               <Button
@@ -456,7 +456,7 @@ export default function Landing() {
           {
             isLoginLoading ? (
               <Button
-                className="w-[60%] md:w-[25%] rounded-xl py-4"
+                className="w-35 rounded-xl py-4"
                 type="olive-green"
               >
                 <div className="flex items-center ml-2">
@@ -470,7 +470,7 @@ export default function Landing() {
               isRegistration ? (
                 <Button
                   onClick={() => authenticateUser("register")}
-                  className="w-[60%] rounded-xl py-4"
+                  className="w-35 rounded-xl py-4"
                   type="olive-green"
                 >
                   Register
@@ -478,7 +478,7 @@ export default function Landing() {
               ) : (
                 <Button
                   onClick={() => authenticateUser("login")}
-                  className="w-[60%] md:w-[25%] rounded-xl py-4"
+                  className="w-35 rounded-xl py-4"
                   type="olive-green"
                 >
                   Login

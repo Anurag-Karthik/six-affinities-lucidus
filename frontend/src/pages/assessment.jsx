@@ -497,7 +497,7 @@ function AssessmentBoard({
         </div>
       </div>
 
-      <div className="relative z-20 min-h-12">
+      <div className="relative z-5 min-h-12">
         {currentQuestionIndex > 0 && (
           <Button
             onClick={onUndo}

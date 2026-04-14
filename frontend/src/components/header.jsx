@@ -15,8 +15,8 @@ export default function Header({ handleBackNavInAssessment }) {
     };
 
     return (
-        <div className="w-full h-15 px-6 pt-[17px] pb-[11px] mb-5 text-left bg-primary">
-            <img src={logo} onClick={homeNavigationBtnHandler} className='h-8 w-7' alt="Lucidus AI Logo" />
+        <div className="w-full h-15 px-6 pt-4.25 pb-2.75 mb-5 text-left bg-primary">
+            <img src={logo} onClick={homeNavigationBtnHandler} className='h-8 w-7 block' alt="Lucidus AI Logo" />
         </div>
     );
 }
