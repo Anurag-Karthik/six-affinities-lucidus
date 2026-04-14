@@ -55,5 +55,14 @@
 }
 
 body {
-    font-family: 'Albert Sans', sans-serif;
+  text-align: center;
+  font-family: 'Albert Sans', sans-serif;
+  background: linear-gradient(var(--color-purple), var(--color-purple-light));
+}
+
+#root {
+  max-width: 360px;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
 }

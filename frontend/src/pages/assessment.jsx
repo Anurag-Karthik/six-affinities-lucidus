@@ -497,7 +497,7 @@ function AssessmentBoard({
         </div>
       </div>
 
-      <div className="relative z-20 min-h-12">
+      <div className="relative z-5 min-h-12">
         {currentQuestionIndex > 0 && (
           <Button
             onClick={onUndo}
@@ -513,17 +513,17 @@ function AssessmentBoard({
       </div>
 
       <div className="absolute inset-x-0 bottom-0  px-6 grid grid-cols-3 gap-8">
-        <div ref={noResponseDroppableRef} className="h-80 flex items-end">
+        <div ref={noResponseDroppableRef} className="h-50 flex items-end">
           <div className="w-full h-40 px-1 bg-[#2C167A80] rounded-t-4xl">
             <Badge text="No" color="orange"></Badge>
           </div>
         </div>
-        <div ref={maybeResponseDroppableRef} className="h-80 flex items-end">
+        <div ref={maybeResponseDroppableRef} className="h-50 flex items-end">
           <div className="w-full h-40 px-1 bg-[#2C167A80] rounded-t-4xl">
             <Badge text="Maybe" color="yellow"></Badge>
           </div>
         </div>
-        <div ref={yesResponseDroppableRef} className="h-80 flex items-end">
+        <div ref={yesResponseDroppableRef} className="h-50 flex items-end">
           <div className="w-full h-40 px-1 bg-[#2C167A80] rounded-t-4xl">
             <Badge text="Yes" color="green"></Badge>
           </div>
