@@ -27,7 +27,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - 3000:3000
+      - 3800:3800
     environment:
       PORT: ${PORT}
       CORS_ORIGIN: ${CORS_ORIGIN}

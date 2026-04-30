@@ -13,6 +13,6 @@ async function bootstrap() {
     origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3800);
 }
 bootstrap();
