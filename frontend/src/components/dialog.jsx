@@ -6,7 +6,7 @@ export default function Dialog({ children, displayDialog, isClosable, onClose })
             {
                 displayDialog &&
             <div className='z-100 h-screen w-screen text-center fixed inset-0 bg-white/5 backdrop-blur-lg'>
-                    <div className='max-w-90 fixed bottom-0 left-1/2 transform -translate-x-1/2 rounded-t-3xl p-6 pb-14 text-center bg-linear-to-b from-white/80 to-white'>
+                    <div className='w-90 fixed bottom-0 left-1/2 transform -translate-x-1/2 rounded-t-3xl p-6 pb-14 text-center bg-linear-to-b from-white/80 to-white'>
                         {
                             isClosable &&
                             <div className='text-right pb-2'>
