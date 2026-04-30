@@ -4,7 +4,7 @@ services:
     container_name: six-affinities-database
     restart: always
     ports:
-      - 5432:5432
+      - 5400:5432
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
