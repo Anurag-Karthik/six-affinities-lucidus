@@ -7,8 +7,10 @@ services:
       - 5432:5432
     volumes:
       - db_data:/var/lib/postgresql/data
-    env_file:
-      - docker.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
       interval: 10s
@@ -26,8 +28,11 @@ services:
         condition: service_healthy
     ports:
       - 3000:3000
-    env_file:
-      - docker.env
+    environment:
+      PORT: ${PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
 
   frontend:
     build:
@@ -39,8 +44,8 @@ services:
       - backend
     ports:
       - 5173:80
-    env_file:
-      - docker.env
+    environment:
+      VITE_BACKEND_URL: ${VITE_BACKEND_URL}
 
 volumes:
   db_data:
